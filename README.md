@@ -1,9 +1,9 @@
 # class-options
-## ES6/ES2015 class options
+## ES6/ES2015+ class option validation
 
-- Provides declarative validation of class parameters at instantiation
+- Provides validation of class parameters at instantiation
 - Descriptors define how to validate parameters, supporting primitives, constructor validation, and custom validation
-- Subclass parameters can be merged with and validated against superclass defaults and descriptors
-- Currently exploring a more functional approach to alleviate defining object literal descriptors and to simplify validation/use
-- See the [develop](https://github.com/0x59/class-options/tree/develop) branch for the latest code
-- For educational purposes only
+- Descriptors are defined by chaining type properties and functions
+- Subclass descriptors can be merged with superclass  descriptors
+- Subclass arguments can be merged with and validated against superclass descriptors
+- Currently experimental and for educational purposes only
