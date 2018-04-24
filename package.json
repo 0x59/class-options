@@ -2,7 +2,7 @@
   "name": "class-options",
   "version": "0.1.0",
   "description": "ES6/ES2015 class option validation",
-  "main": "options.js",
+  "main": "src/options.js",
   "scripts": {
     "test": "mocha --reporter spec",
 	"cover": "node_modules/istanbul/lib/cli.js cover node_modules/mocha/bin/_mocha -- -R spec test/*"
