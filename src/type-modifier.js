@@ -74,8 +74,8 @@ class TypeModifier {
 		return this
 	}
 	// merge with any super options encountered, does nothing if subclass doesn't define it
-	get merge() {
-		this[$_type].merge = true
+	merge( fn ) {
+		this[$_type].merge = fn
 		return this
 	}
 	// throw for invalid type with no default
