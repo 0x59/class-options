@@ -1,4 +1,5 @@
 
+import { util as _ } from './utility.js'
 import { Symbols } from './module-symbols.js'
 import { OptionValidator } from './option-validator.js'
 
@@ -20,7 +21,7 @@ class TypeModifier {
 
 	mergeSubtype( type ) {
 		const
-			supertype = this[$_type]
+			supertype = this[$_type],
 			subtype = type[$_type]
 
 		if( subtype.isSuper ) {
@@ -34,8 +35,9 @@ class TypeModifier {
 	}
 
 	constructor( validatorName, ...validatorArgs ) {
+		_.nStr(validatorName, 'A validator name is required')
 		
-		if( name === 'super' ) {
+		if( validatorName === 'super' ) {
 			this[$_type] = {
 				isSuper: true
 			}
@@ -44,9 +46,10 @@ class TypeModifier {
 			this[$_type] = {
 				isSuper: false,
 				isRequired: false,
+				isPublic: false,
 				nullOk: false,
 				undefOk: false,
-				merge: false,
+				merge: null,
 				throw: false,
 				dflt: null
 			}
@@ -63,6 +66,11 @@ class TypeModifier {
 		this[$_type].isRequired = true
 		return this
 	}
+	
+	get isPublic() {
+		this[$_type].isPublic = true
+		return this
+	}
 	// key present, = null
 	get nullOk() {
 		this[$_type].nullOk = true 
@@ -73,14 +81,14 @@ class TypeModifier {
 		this[$_type].undefOk = true
 		return this
 	}
-	// merge with any super options encountered, does nothing if subclass doesn't define it
-	merge( fn ) {
-		this[$_type].merge = fn
-		return this
-	}
 	// throw for invalid type with no default
 	get throw() {
 		this[$_type].throw = true 
+		return this
+	}
+	// merge with any super options encountered, does nothing if subclass doesn't define it
+	merge( fn ) {
+		this[$_type].merge = fn
 		return this
 	}
 	// used if key isn't present or key is present and null/undef are not valid

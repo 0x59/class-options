@@ -12,7 +12,7 @@ const Types = types => ( ctorOptions, inlineOptions = null, baseInstance = null 
 		options.addOptions(inlineOptions)
 	}
 
-	if( ctorOptions !== options ) {
+	if( ctorOptions && (ctorOptions !== options) ) {
 		options.addOptions(ctorOptions)
 	}
 

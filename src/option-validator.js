@@ -107,7 +107,7 @@ class OptionValidator {
 		return { isValid, value }
 	}
 
-	[$.super]() {
+	[$.super]( v ) {
 		return v
 	}
 

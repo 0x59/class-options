@@ -1,14 +1,19 @@
 
 import { Symbols } from './module-symbols.js'
+import { TypeModifier } from './type-modifier.js'
 
 const
+	WARN = 1,
 	$ = Symbols(), {
+		$_,
 		$_addOption,
 		$_options,
 		$_pending,
 		$_reducePendingOptions,
 		$_types
 	} = $
+
+class InvalidType extends Error {}
 
 class Options {
 
@@ -19,16 +24,14 @@ class Options {
 	}
 
 	[$_addOption]( name, v ) {
-		if( this[$_types].has(name) ) {
-			const
-				type = this[$_types].get(name),
-				validator = type.validator
+		const type = this[$_types].get(name)
 
+		if( type && !type.has.isSuper ) {
 			let isValid, value
 
 			if( this[$_options].has(name) ) {
 				if( type.has.merge ) {
-					({ isValid, value } = validator.validate(v))
+					({ isValid, value } = type.validator.validate(v))
 
 					if( isValid ) {
 						this[$_options].set(name, validator.merge(this[$_options].get(name), value))
@@ -36,7 +39,7 @@ class Options {
 				} // without merge we don't validate, because we keep the existing value
 			
 			} else {
-				({ isValid, value } = validator.validate(v))
+				({ isValid, value } = type.validator.validate(v))
 				if( isValid ) {
 					this[$_options].set(name, value)
 				}
@@ -57,8 +60,7 @@ class Options {
 			if( values ) {
 				const
 					type = this[$_types].get(name),
-					validator = type.validator,
-					{ isReduced, value } = validator.reduce(values)
+					{ isReduced, value } = type.validator.reduce(values)
 				
 				if( isReduced ) {
 					this[$_options].set(name, value)
@@ -70,8 +72,13 @@ class Options {
 
 	addTypes( types ) {
 		for( const [name, type] of Object.entries(types) ) {
-			const subtype = this[$_types].get(name)
-			this[$_types].set(name, subtype ? type.mergeSubtype(subtype) : type)
+			if( type instanceof TypeModifier ) {
+				const subtype = this[$_types].get(name)
+				this[$_types].set(name, subtype ? type.mergeSubtype(subtype) : type)
+
+			} else {
+				throw new InvalidType(`Encountered invalid type: [${name}] while adding types`)
+			}
 		}
 
 		this[$_reducePendingOptions](types)
@@ -84,10 +91,36 @@ class Options {
 	}
 	// setup options for use on class instance
 	attachTo( instance ) {
-		
+		let	target,
+			options = this
+
+		instance[$_] = {}
+		for( let [name, value] of this[$_options] ) {
+			target = this[$_types].get(name).has.isPublic ? instance : instance[$_]
+
+			Object.defineProperty(target, name, {
+				get() {
+					return options[$_options].get(name)
+				},
+				set( v ) {
+					const
+						validator = options[$_types].get(name).validator,
+						{ isValid, value } = validator.validate(v)
+
+					if( isValid ) {
+						options[$_options].set(name, value)
+
+					} else if( WARN ) {
+						console.warn(`Unable to set option: [${name}] with invalid value: [${value}].`)
+					}
+				},
+				enumerable: false,
+				configurable: false
+			})
+		}
 	}
 
 }
 
-export { Options }
+export { Options, $_ }
 
