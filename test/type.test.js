@@ -13,17 +13,17 @@ describe('Type', function() {
 
 	describe('Interface', function() {
 
-		PRIMITIVE_TYPES.forEach(function(type) {
+		for( const type of PRIMITIVE_TYPES.keys() ) {
 			it(`should return an instance of [TypeModifier] when accessing: ${type}`, function() {
 				expect(Type[type]).to.be.an.instanceof(TypeModifier)
 			})
-		})
+		}
 
-		COMPOUND_TYPES.forEach(function(type) {
+		for( const type of COMPOUND_TYPES.keys() ) {
 			it(`should return an instance of [TypeModifier] when executing: ${type}()`, function() {
 				expect(Type[type]()).to.be.an.instanceof(TypeModifier)
 			})
-		})
+		}
 
 	})
 

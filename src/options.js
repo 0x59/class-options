@@ -17,7 +17,7 @@ class InvalidType extends Error {}
 
 class Options {
 
-	constructor( options ) {
+	constructor() {
 		this[$_options] = new Map()
 		this[$_pending] = new Map()
 		this[$_types] = new Map()

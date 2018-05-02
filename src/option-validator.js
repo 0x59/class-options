@@ -83,7 +83,7 @@ class OptionValidator {
 		
 		if( this[$_type].dflt ) {
 			WARN && console.warn('Setting invalid option value to default')
-			value = type.dflt()
+			value = this[$_type].dflt()
 
 		} else if( this[$_type].nullOk ) {
 			WARN && console.warn('Setting invalid option value to null')
@@ -108,47 +108,47 @@ class OptionValidator {
 	}
 
 	[$.super]( v ) {
-		return v
+		throw new InvalidOption('Feature not implemented')
 	}
 
 	[$.any]( v ) {
-		return v
+		return { isValid: true, value: v }
 	}
 
 	[$.arr]( v ) {
-		return validate(v, Array.isArray(v))
+		return this[$_validate](v, Array.isArray(v))
 	}
 
 	[$.bool]( v ) {
-		return validate(v, typeof v === BOOL)
+		return this[$_validate](v, typeof v === BOOL)
 	}
 
 	[$.el]( v ) {
-		return validate(v, v instanceof HTMLElement)
+		return this[$_validate](v, v instanceof HTMLElement)
 	}
 
 	[$.fn]( v ) {
-		return validate(v, typeof v === FN)
+		return this[$_validate](v, typeof v === FN)
 	}
 
 	[$.node]( v ) {
-		return validate(v, v instanceof Node)
+		return this[$_validate](v, v instanceof Node)
 	}
 
 	[$.num]( v ) {
-		return validate(v, typeof v === NUM)
+		return this[$_validate](v, typeof v === NUM)
 	}
 
 	[$.obj]( v ) {
-		return validate(v, typeof v === OBJ)
+		return this[$_validate](v, typeof v === OBJ)
 	}
 
 	[$.str]( v ) {
-		return validate(v, typeof v === STR)
+		return this[$_validate](v, typeof v === STR)
 	}
 
 	[$.sym]( v ) {
-		return validate(v, typeof v === SYM)
+		return this[$_validate](v, typeof v === SYM)
 	}
 
 	[$.anyOf]( arr, v ) {

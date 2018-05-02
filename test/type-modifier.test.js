@@ -14,17 +14,17 @@ describe('TypeModifier', function() {
 
 	describe('Interface', function() {
 
-		SUPPORTED_TYPES.forEach(function(type) {
+		for( const type of SUPPORTED_TYPES.keys() ) {
 			it(`should create an instance of [TypeModifier] for the supported type: ${type}`, function() {
 				expect(new TypeModifier(type)).to.be.an.instanceof(TypeModifier)
 			})
-		})
+		}
 
 		it('should throw for unsupported types', function() {
 			expect(() => new TypeModifier('dsf')).to.throw()
 		})
 
-		describe('validator', function() {
+		describe('#validator', function() {
 
 			it('should return an [OptionValidator] instance when accessed', function() {
 				expect(new TypeModifier('any').validator).to.be.an.instanceof(OptionValidator)
@@ -36,7 +36,7 @@ describe('TypeModifier', function() {
 
 		})
 
-		describe('modifiers + has', function() {
+		describe('modifiers + #has', function() {
 
 			let	typeModifier
 
@@ -70,6 +70,31 @@ describe('TypeModifier', function() {
 				TYPE_MODIFIERS.forEach(function(modifier) {
 					expect(step.has[modifier]).to.be.true
 				})
+			})
+
+		})
+
+		describe('#mergeSubtype()', function() {
+			
+			let supertype, subtype
+
+			before(function() {
+				supertype = new TypeModifier('arr')
+				subtype = new TypeModifier('super')
+			})
+
+			it('should merge subtype descriptor properties over supertype descriptor properties, except: isSuper', function() {
+				supertype.dflt(() => [])
+				subtype.dflt(() => void 0).merge(( a, b ) => a.concat(b)).isPublic
+
+				const mergedType = supertype.mergeSubtype(subtype)
+				expect(mergedType.has.dflt).to.be.true
+				expect(mergedType.has.merge).to.be.true
+				expect(mergedType.has.isPublic).to.be.true
+
+				const result = mergedType.validator.validate()
+				expect(result.isValid).to.be.true
+				expect(result.value).to.be.undefined
 			})
 
 		})
